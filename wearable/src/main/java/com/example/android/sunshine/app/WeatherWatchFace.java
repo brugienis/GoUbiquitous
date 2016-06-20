@@ -133,7 +133,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
 
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
+            mGoogleApiClient = new GoogleApiClient.Builder(WeatherWatchFace.this)
                     .addApi(Wearable.API)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -169,6 +169,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             Log.v(TAG, "onConnectionSuspended - i: " + i);
         }
 
+        private int mTestCnt;
         @Override
         public void onDataChanged(DataEventBuffer dataEvents) {
             for (DataEvent event : dataEvents) {
@@ -177,7 +178,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     DataItem item = event.getDataItem();
                     if (item.getUri().getPath().compareTo("/weather_info") == 0) {
                         DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                        int mTestCnt = dataMap.getInt(COUNT_KEY);
+                        mTestCnt = dataMap.getInt(COUNT_KEY);
                         Log.v(TAG, "onDataChanged - mTestCnt: " + mTestCnt);
                     }
                 } else if (event.getType() == DataEvent.TYPE_DELETED) {
@@ -324,9 +325,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
             mTime.setToNow();
             String text = mAmbient
-                    ? String.format("%d:%02d", mTime.hour, mTime.minute)
+                    ? String.format("%d:%02d-%3d", mTime.hour, mTime.minute, mTestCnt)
 //                    : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
-                    : String.format("%d:%02d", mTime.hour, mTime.minute);
+                    : String.format("%d:%02d-%3d", mTime.hour, mTime.minute, mTestCnt);
             canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
         }
 

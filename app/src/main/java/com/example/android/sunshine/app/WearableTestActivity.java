@@ -9,8 +9,12 @@ import android.widget.EditText;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 public class WearableTestActivity extends AppCompatActivity implements
@@ -21,6 +25,7 @@ public class WearableTestActivity extends AppCompatActivity implements
     private int cnt;
     private EditText text;
     private GoogleApiClient mGoogleApiClient;
+    private static final String COUNT_KEY = "com.example.android.sunshine.app.key.count";
 
     private static final String TAG = WearableTestActivity.class.getSimpleName();
 
@@ -48,6 +53,25 @@ public class WearableTestActivity extends AppCompatActivity implements
 
     private void sendDataItem() {
         cnt++;
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/weather_info");
+        putDataMapReq.getDataMap().putInt(COUNT_KEY, cnt);
+
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        putDataReq.setUrgent();
+
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(final DataApi.DataItemResult result) {
+                if (result.getStatus().isSuccess()) {
+                    Log.d(TAG, "sendDataItem - data item set: " + result.getDataItem().getUri());
+                } else {
+                    Log.d(TAG, "sendDataItem - unsuccessful");
+                }
+            }
+        });
+
         text.setText("Sent data item: " + cnt);
     }
 
