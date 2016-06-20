@@ -51,6 +51,9 @@ public class WearableTestActivity extends AppCompatActivity implements
                 .build();
     }
 
+    /*
+        PutDataRequest.setUrgent() added in Google Play services 8.3.0
+     */
     private void sendDataItem() {
         cnt++;
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/weather_info");
