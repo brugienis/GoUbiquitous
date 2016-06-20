@@ -121,7 +121,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         float mYOffset;
         private static final String COUNT_KEY = "com.example.android.sunshine.app.key.count";
 
-        private static final String TAG = Engine.class.getSimpleName();
+        private final String TAG = Engine.class.getSimpleName();
 
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
