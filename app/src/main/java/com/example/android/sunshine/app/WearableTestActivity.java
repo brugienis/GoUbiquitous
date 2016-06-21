@@ -25,7 +25,9 @@ public class WearableTestActivity extends AppCompatActivity implements
     private int cnt;
     private EditText text;
     private GoogleApiClient mGoogleApiClient;
-    private static final String COUNT_KEY = "com.example.android.sunshine.app.key.count";
+    private static final String LOW_TEMP = "com.example.android.sunshine.app.key.LOW.TEMP";
+    private static final String HIGH_TEMP = "com.example.android.sunshine.app.key.HIGGH.TEMP";
+    private static final String PIC_IDX = "com.example.android.sunshine.app.key.PIC.IDX";
 
     private static final String TAG = WearableTestActivity.class.getSimpleName();
 
@@ -57,7 +59,9 @@ public class WearableTestActivity extends AppCompatActivity implements
     private void sendDataItem() {
         cnt++;
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/weather_info");
-        putDataMapReq.getDataMap().putInt(COUNT_KEY, cnt);
+        putDataMapReq.getDataMap().putInt(LOW_TEMP, cnt);
+        putDataMapReq.getDataMap().putInt(HIGH_TEMP, (10 + cnt));
+        putDataMapReq.getDataMap().putInt(PIC_IDX, cnt);
 
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         putDataReq.setUrgent();
@@ -68,7 +72,7 @@ public class WearableTestActivity extends AppCompatActivity implements
             @Override
             public void onResult(final DataApi.DataItemResult result) {
                 if (result.getStatus().isSuccess()) {
-                    Log.d(TAG, "sendDataItem - data item set: " + result.getDataItem().getUri());
+                    Log.d(TAG, "sendDataItem - new data item set: " + result.getDataItem().getUri());
                 } else {
                     Log.d(TAG, "sendDataItem - unsuccessful");
                 }

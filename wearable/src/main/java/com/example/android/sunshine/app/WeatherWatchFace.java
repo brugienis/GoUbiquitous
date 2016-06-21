@@ -119,7 +119,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         float mXOffset;
         float mYOffset;
-        private static final String COUNT_KEY = "com.example.android.sunshine.app.key.count";
+        private int mLowTemp;
+        private int mHighTemp;
+        private int mPicIdx;
+        private static final String LOW_TEMP = "com.example.android.sunshine.app.key.LOW.TEMP";
+        private static final String HIGH_TEMP = "com.example.android.sunshine.app.key.HIGGH.TEMP";
+        private static final String PIC_IDX = "com.example.android.sunshine.app.key.PIC.IDX";
 
         private final String TAG = Engine.class.getSimpleName();
 
@@ -169,7 +174,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             Log.v(TAG, "onConnectionSuspended - i: " + i);
         }
 
-        private int mTestCnt;
         @Override
         public void onDataChanged(DataEventBuffer dataEvents) {
             for (DataEvent event : dataEvents) {
@@ -178,8 +182,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     DataItem item = event.getDataItem();
                     if (item.getUri().getPath().compareTo("/weather_info") == 0) {
                         DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                        mTestCnt = dataMap.getInt(COUNT_KEY);
-                        Log.v(TAG, "onDataChanged - mTestCnt: " + mTestCnt);
+                        mLowTemp = dataMap.getInt(LOW_TEMP);
+                        mHighTemp = dataMap.getInt(HIGH_TEMP);
+                        mPicIdx = dataMap.getInt(PIC_IDX);
+                        Log.v(TAG, "onDataChanged - mLowTemp/mHighTemp/mPicIdx: " + mLowTemp + "/" + mHighTemp + "/" + mPicIdx);
                     }
                 } else if (event.getType() == DataEvent.TYPE_DELETED) {
                     // DataItem deleted
@@ -325,9 +331,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
             mTime.setToNow();
             String text = mAmbient
-                    ? String.format("%d:%02d-%3d", mTime.hour, mTime.minute, mTestCnt)
+                    ? String.format("%d:%02d-%3d", mTime.hour, mTime.minute, mLowTemp)
 //                    : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
-                    : String.format("%d:%02d-%3d", mTime.hour, mTime.minute, mTestCnt);
+                    : String.format("%d:%02d-%3d", mTime.hour, mTime.minute, mLowTemp);
             canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
         }
 
