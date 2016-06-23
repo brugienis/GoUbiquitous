@@ -343,14 +343,15 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     // The user has completed the tap gesture.
                     mTapCount++;
                     mBackgroundPaint.setColor(resources.getColor(mTapCount % 2 == 0 ?
-                            R.color.background : R.color.background2));
+//                            R.color.background : R.color.background2));
+                            R.color.background0 : R.color.background2));
                     break;
             }
             invalidate();
         }
 
-        private
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy");
+        private SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy");
+        private float verticalCenterPos;
 
         private boolean fstTimeDone;
         @Override
@@ -363,7 +364,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
 
             if (!fstTimeDone) {
-                Log.v(TAG, "onDraw - mTextSize should/is : " + mTextSize + "/" + mTextPaint.getTextSize());
+                verticalCenterPos = bounds.width() / 2F;
+                Log.v(TAG, "onDraw - verticalCenterPos/mTextSize should/is : " + verticalCenterPos + "/" + mTextSize + "/" + mTextPaint.getTextSize());
             }
 
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
@@ -372,18 +374,35 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             String text = mAmbient
                     ? String.format("%d:%02d = %3d", mTime.hour, mTime.minute, mLowTemp)
                     : String.format("%d:%02d = %3d", mTime.hour, mTime.minute, mLowTemp);
-            canvas.drawText(text, mXOffset, yOffset, mTextPaint);
+//            canvas.drawText(text, mXOffset, yOffset, mTextPaint);
+//            float textWidth = mTextPaint.measureText(text);
+//            float xOffset = verticalCenterPos - (mTextPaint.measureText(text) / 2F);
+            float xOffset = getXOffset(text);
+//            if (!fstTimeDone) {
+//                Log.v(TAG, "onDraw - bounds left/textWidth/xOffset : " + bounds.left + "/" + textWidth + "/" + xOffset);
+//            }
+            canvas.drawText(text, xOffset, yOffset, mTextPaint);
 
             // Draw today's date
             yOffset = yOffset + distBetweenLines;
             Date today = new Date();
             String result = formatter.format(today);
-            canvas.drawText(result, mXOffset, yOffset, mTextPaint);
+            canvas.drawText(result, getXOffset(result), yOffset, mTextPaint);
 
             // Draw low and high temperatures
             yOffset = yOffset + distBetweenLines;
             canvas.drawText((mLowTemp + " - " + mHighTemp), mXOffset, yOffset, mTextPaint);
             fstTimeDone = true;
+        }
+
+        private float getXOffset(String  text) {
+            float textWidth = mTextPaint.measureText(text);
+            float xOffset = verticalCenterPos - (mTextPaint.measureText(text) / 2F);
+//            Log.v(TAG, "getXOffset - xOffset : " + xOffset);
+            return xOffset;git
+//            if (!fstTimeDone) {
+//                Log.v(TAG, "onDraw - bounds left/textWidth/xOffset : " + bounds.left + "/" + textWidth + "/" + xOffset);
+//            }
         }
 
         /**
