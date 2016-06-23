@@ -374,24 +374,19 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             String text = mAmbient
                     ? String.format("%d:%02d = %3d", mTime.hour, mTime.minute, mLowTemp)
                     : String.format("%d:%02d = %3d", mTime.hour, mTime.minute, mLowTemp);
-//            canvas.drawText(text, mXOffset, yOffset, mTextPaint);
-//            float textWidth = mTextPaint.measureText(text);
-//            float xOffset = verticalCenterPos - (mTextPaint.measureText(text) / 2F);
             float xOffset = getXOffset(text);
-//            if (!fstTimeDone) {
-//                Log.v(TAG, "onDraw - bounds left/textWidth/xOffset : " + bounds.left + "/" + textWidth + "/" + xOffset);
-//            }
             canvas.drawText(text, xOffset, yOffset, mTextPaint);
 
             // Draw today's date
             yOffset = yOffset + distBetweenLines;
             Date today = new Date();
-            String result = formatter.format(today);
-            canvas.drawText(result, getXOffset(result), yOffset, mTextPaint);
+            String formattedDate = formatter.format(today);
+            canvas.drawText(formattedDate, getXOffset(formattedDate), yOffset, mTextPaint);
 
             // Draw low and high temperatures
             yOffset = yOffset + distBetweenLines;
-            canvas.drawText((mLowTemp + " - " + mHighTemp), mXOffset, yOffset, mTextPaint);
+            String lowHighTemps = mLowTemp + " - " + mHighTemp;
+            canvas.drawText(lowHighTemps, getXOffset(lowHighTemps), yOffset, mTextPaint);
             fstTimeDone = true;
         }
 
@@ -399,7 +394,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float textWidth = mTextPaint.measureText(text);
             float xOffset = verticalCenterPos - (mTextPaint.measureText(text) / 2F);
 //            Log.v(TAG, "getXOffset - xOffset : " + xOffset);
-            return xOffset;git
+            return xOffset;
 //            if (!fstTimeDone) {
 //                Log.v(TAG, "onDraw - bounds left/textWidth/xOffset : " + bounds.left + "/" + textWidth + "/" + xOffset);
 //            }
