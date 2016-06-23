@@ -48,6 +48,8 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 // /Users/business/Documents//android-sdk-macosx/platform-tools/adb -d forward tcp:5601 tcp:5601
@@ -119,14 +121,23 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         float mXOffset;
         float mYOffset;
-        private int mLowTemp;
-        private int mHighTemp;
+        private int mLowTemp = -10;
+        private int mHighTemp = 99;
         private int mPicIdx;
+        private int mTextSize = 22;
+        private int topPosition = 96;
+        private int distBetweenLines = 41;
+
         private static final String LOW_TEMP = "com.example.android.sunshine.app.key.LOW.TEMP";
         private static final String HIGH_TEMP = "com.example.android.sunshine.app.key.HIGGH.TEMP";
         private static final String PIC_IDX = "com.example.android.sunshine.app.key.PIC.IDX";
+        private static final String ADDED_TO_COMPILE = "com.example.android.sunshine.app.key.PIC.IDX.XXX";
 
-        private final String TAG = Engine.class.getSimpleName();
+        private static final String TEXT_SIZE = "com.example.android.sunshine.app.key.TEXT.SIZE";
+        private static final String TOP_POSITION = "com.example.android.sunshine.app.key.TOP.POSITION";
+        private static final String DISTANCE_BETWEEN_LINES = "com.example.android.sunshine.app.key.DISTANCE.BETWEEN.LINES";
+
+        private final String TAG = Engine.class.getSimpleName() + "BR";
 
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
@@ -160,6 +171,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             mTextPaint = new Paint();
             mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+//            mTextPaint.setTextSize(mTextSize);
+//            Log.v(TAG, "onCreate - text size/mYOffset: " + mTextPaint.getTextSize() + "/" + mYOffset);
+//            I do not see the effect of the below
+//            mTextPaint.setTextSize(40);
 
             mTime = new Time();
         }
@@ -176,6 +191,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onDataChanged(DataEventBuffer dataEvents) {
+            Log.v(TAG, "onDataChanged - start");
             for (DataEvent event : dataEvents) {
                 if (event.getType() == DataEvent.TYPE_CHANGED) {
                     // DataItem changed
@@ -185,7 +201,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                         mLowTemp = dataMap.getInt(LOW_TEMP);
                         mHighTemp = dataMap.getInt(HIGH_TEMP);
                         mPicIdx = dataMap.getInt(PIC_IDX);
+                        mTextSize = dataMap.getInt(TEXT_SIZE);
+                        topPosition = dataMap.getInt(TOP_POSITION);
+                        distBetweenLines = dataMap.getInt(DISTANCE_BETWEEN_LINES);
+
+                        mTextPaint.setTextSize(mTextSize);
                         Log.v(TAG, "onDataChanged - mLowTemp/mHighTemp/mPicIdx: " + mLowTemp + "/" + mHighTemp + "/" + mPicIdx);
+                        Log.v(TAG, "onDataChanged - mTextSize/topPosition/distBetweenLines: " + mTextSize + "/" + topPosition + "/" + distBetweenLines);
                     }
                 } else if (event.getType() == DataEvent.TYPE_DELETED) {
                     // DataItem deleted
@@ -263,7 +285,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
             float textSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
+            // FIXME: 23/06/2016 add the value below to resources and use code above
+            textSize = mTextSize;
 
+            Log.v(TAG, "onApplyWindowInsets - mXOffset: " + mXOffset);
+            mXOffset = 22.5F;
+//            mYOffset = 97.5F;
+            mYOffset = topPosition;
+            Log.v(TAG, "onApplyWindowInsets - mXOffset/mYOffset: " + mXOffset + "/" + mYOffset);
             mTextPaint.setTextSize(textSize);
         }
 
@@ -319,6 +348,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             invalidate();
         }
 
+        private
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy");
+
+        private boolean fstTimeDone;
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
             // Draw the background.
@@ -328,13 +361,28 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
             }
 
+            if (!fstTimeDone) {
+                Log.v(TAG, "onDraw - mTextSize should/is : " + mTextSize + "/" + mTextPaint.getTextSize());
+            }
+
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
+            float yOffset = mYOffset;
             mTime.setToNow();
             String text = mAmbient
-                    ? String.format("%d:%02d-%3d", mTime.hour, mTime.minute, mLowTemp)
-//                    : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
-                    : String.format("%d:%02d-%3d", mTime.hour, mTime.minute, mLowTemp);
-            canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
+                    ? String.format("%d:%02d = %3d", mTime.hour, mTime.minute, mLowTemp)
+                    : String.format("%d:%02d = %3d", mTime.hour, mTime.minute, mLowTemp);
+            canvas.drawText(text, mXOffset, yOffset, mTextPaint);
+
+            // Draw today's date
+            yOffset = yOffset + distBetweenLines;
+            Date today = new Date();
+            String result = formatter.format(today);
+            canvas.drawText(result, mXOffset, yOffset, mTextPaint);
+
+            // Draw low and high temperatures
+            yOffset = yOffset + distBetweenLines;
+            canvas.drawText((mLowTemp + " - " + mHighTemp), mXOffset, yOffset, mTextPaint);
+            fstTimeDone = true;
         }
 
         /**

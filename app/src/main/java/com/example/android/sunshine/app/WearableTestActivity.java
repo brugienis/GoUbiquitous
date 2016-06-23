@@ -29,6 +29,10 @@ public class WearableTestActivity extends AppCompatActivity implements
     private static final String HIGH_TEMP = "com.example.android.sunshine.app.key.HIGGH.TEMP";
     private static final String PIC_IDX = "com.example.android.sunshine.app.key.PIC.IDX";
 
+    private static final String TEXT_SIZE = "com.example.android.sunshine.app.key.TEXT.SIZE";
+    private static final String TOP_POSITION = "com.example.android.sunshine.app.key.TOP.POSITION";
+    private static final String DISTANCE_BETWEEN_LINES = "com.example.android.sunshine.app.key.DISTANCE.BETWEEN.LINES";
+
     private static final String TAG = WearableTestActivity.class.getSimpleName();
 
     @Override
@@ -62,6 +66,11 @@ public class WearableTestActivity extends AppCompatActivity implements
         putDataMapReq.getDataMap().putInt(LOW_TEMP, cnt);
         putDataMapReq.getDataMap().putInt(HIGH_TEMP, (10 + cnt));
         putDataMapReq.getDataMap().putInt(PIC_IDX, cnt);
+        Log.d(TAG, "sendDataItem - text: " + text.getText().toString());
+        String[] formatingParams = text.getText().toString().split(" ");
+        putDataMapReq.getDataMap().putInt(TEXT_SIZE, (Integer.parseInt(formatingParams[0])));
+        putDataMapReq.getDataMap().putInt(TOP_POSITION, (Integer.parseInt(formatingParams[1])));
+        putDataMapReq.getDataMap().putInt(DISTANCE_BETWEEN_LINES, (Integer.parseInt(formatingParams[2])));
 
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         putDataReq.setUrgent();
@@ -74,12 +83,12 @@ public class WearableTestActivity extends AppCompatActivity implements
                 if (result.getStatus().isSuccess()) {
                     Log.d(TAG, "sendDataItem - new data item set: " + result.getDataItem().getUri());
                 } else {
-                    Log.d(TAG, "sendDataItem - unsuccessful");
+                    Log.d(TAG, "sendDataItem - unsuccessful yoy");
                 }
             }
         });
 
-        text.setText("Sent data item: " + cnt);
+//        text.setText("Sent data item: " + cnt);
     }
 
     @Override
