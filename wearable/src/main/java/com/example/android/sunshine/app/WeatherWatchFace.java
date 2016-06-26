@@ -433,7 +433,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             // Draw weather art and low / high temperatures
             yOffset = yOffset + distBetweenLines;
-            float spacePix = 10;
+            float spacePix = 25;
             float highTempSize = mTextPaint.measureText(mHighTemp);
             float lineWidth = weatherArtWithAndHeight
                     + spacePix
@@ -448,7 +448,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
             // FIXME: 24/06/2016 improve below - lineWidth is different
             if (mCurrWeatherArt != null) {
-                canvas.drawBitmap(mCurrWeatherArt, xOffset, weatherArtWithAndHeight, mTextPaint);
+//                canvas.drawBitmap(mCurrWeatherArt, xOffset, yOffset + weatherArtWithAndHeight, mTextPaint);
+                canvas.drawBitmap(mCurrWeatherArt, xOffset, yOffset - weatherArtWithAndHeight, mTextPaint);
             }
             // Draw high temp
             xOffset = xOffset + weatherArtWithAndHeight + spacePix;
