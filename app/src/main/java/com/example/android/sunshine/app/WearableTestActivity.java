@@ -25,9 +25,11 @@ public class WearableTestActivity extends AppCompatActivity implements
     private int cnt;
     private EditText text;
     private GoogleApiClient mGoogleApiClient;
+
+    private static final String TIMESTAMP = "com.example.android.sunshine.app.key.TIMESTAMP";
     private static final String LOW_TEMP = "com.example.android.sunshine.app.key.LOW.TEMP";
-    private static final String HIGH_TEMP = "com.example.android.sunshine.app.key.HIGGH.TEMP";
-    private static final String PIC_IDX = "com.example.android.sunshine.app.key.PIC.IDX";
+    private static final String HIGH_TEMP = "com.example.android.sunshine.app.key.HIGH.TEMP";
+    private static final String WEATHER_ID = "com.example.android.sunshine.app.key.WEATHER_ID";
 
     private static final String TEXT_SIZE = "com.example.android.sunshine.app.key.TEXT.SIZE";
     private static final String TOP_POSITION = "com.example.android.sunshine.app.key.TOP.POSITION";
@@ -63,9 +65,11 @@ public class WearableTestActivity extends AppCompatActivity implements
     private void sendDataItem() {
         cnt++;
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/weather_info");
+        putDataMapReq.getDataMap().putLong(TIMESTAMP, System.currentTimeMillis());
         putDataMapReq.getDataMap().putInt(LOW_TEMP, cnt);
         putDataMapReq.getDataMap().putInt(HIGH_TEMP, (10 + cnt));
-        putDataMapReq.getDataMap().putInt(PIC_IDX, cnt);
+        putDataMapReq.getDataMap().putInt(WEATHER_ID, 0);
+
         Log.d(TAG, "sendDataItem - text: " + text.getText().toString());
         String[] formatingParams = text.getText().toString().split(" ");
         putDataMapReq.getDataMap().putInt(TEXT_SIZE, (Integer.parseInt(formatingParams[0])));
