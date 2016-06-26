@@ -214,23 +214,29 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                         mTextSize = dataMap.getInt(TEXT_SIZE);
                         topPosition = dataMap.getInt(TOP_POSITION);
                         distBetweenLines = dataMap.getInt(DISTANCE_BETWEEN_LINES);
+                        Log.v(TAG, "onDataChanged - mWeatherId: " + mWeatherId);
 
-                        BitmapDrawable weatherDrawable =
-                                (BitmapDrawable) getResources().getDrawable(Utility.getArtResourceForWeatherCondition(mWeatherId),null);
+                        int i = Utility.getArtResourceForWeatherCondition(mWeatherId);
+                        Log.v(TAG, "onDataChanged - drawable: " + i);
+                        if (i != -1) {
+                            BitmapDrawable weatherDrawable =
+                                    (BitmapDrawable) getResources().getDrawable(Utility.getArtResourceForWeatherCondition(mWeatherId),null);
 
-                        Bitmap origBitmap = null;
-                        if (weatherDrawable != null ) {
-                            origBitmap = weatherDrawable.getBitmap();
-                            Log.d(TAG, "extractWeatherData: decoded a bitmap for the weather art");
-                        }
-
-                        // FIXME: 24/06/2016 get art size on dp from resources
+                            Bitmap origBitmap = null;
+                            if (weatherDrawable != null ) {
+                                origBitmap = weatherDrawable.getBitmap();
+                                Log.d(TAG, "extractWeatherData: decoded a bitmap for the weather art");
+                                // FIXME: 24/06/2016 get art size on dp from resources
 //                        float scaledSize = getResources().getDimension(R.dimen.weather_icon_size);
 //                        float weatherArtWithAndHeight = Utility.dpToPixels(getBaseContext(),scaledSize);
-                        mCurrWeatherArt = Bitmap.createScaledBitmap(origBitmap,
-                                weatherArtWithAndHeight,
-                                weatherArtWithAndHeight,
-                                true);
+                                mCurrWeatherArt = Bitmap.createScaledBitmap(origBitmap,
+                                        weatherArtWithAndHeight,
+                                        weatherArtWithAndHeight,
+                                        true);
+                            }
+                        }
+
+
 
                         mTextPaint.setTextSize(mTextSize);
                         Log.v(TAG, "onDataChanged - mLowTemp/mHighTemp/mWeatherId: " + mLowTemp + "/" + mHighTemp + "/" + mWeatherId);
@@ -239,6 +245,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 } else if (event.getType() == DataEvent.TYPE_DELETED) {
                     // DataItem deleted
                 }
+                fstTimeDone = false;
             }
             dataEvents.release();
         }
@@ -440,9 +447,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 Log.v(TAG, "onDraw - before printing bitmap - xOffset/yOffset/mCurrWeatherArt: " + xOffset + "/" + yOffset + "/" + mCurrWeatherArt);
             }
             // FIXME: 24/06/2016 improve below - lineWidth is different
-//            if (mCurrWeatherArt != null) {
-//                canvas.drawBitmap(mCurrWeatherArt, xOffset, weatherArtWithAndHeight, mTextPaint);
-//            }
+            if (mCurrWeatherArt != null) {
+                canvas.drawBitmap(mCurrWeatherArt, xOffset, weatherArtWithAndHeight, mTextPaint);
+            }
             // Draw high temp
             xOffset = xOffset + weatherArtWithAndHeight + spacePix;
             canvas.drawText(mHighTemp, xOffset, yOffset, mTextPaint);

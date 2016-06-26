@@ -68,7 +68,7 @@ public class WearableTestActivity extends AppCompatActivity implements
         putDataMapReq.getDataMap().putLong(TIMESTAMP, System.currentTimeMillis());
         putDataMapReq.getDataMap().putInt(LOW_TEMP, cnt);
         putDataMapReq.getDataMap().putInt(HIGH_TEMP, (10 + cnt));
-        putDataMapReq.getDataMap().putInt(WEATHER_ID, 0);
+        putDataMapReq.getDataMap().putInt(WEATHER_ID, 220);
 
         Log.d(TAG, "sendDataItem - text: " + text.getText().toString());
         String[] formatingParams = text.getText().toString().split(" ");
