@@ -87,7 +87,7 @@ public class WearableTestActivity extends AppCompatActivity implements
                 if (result.getStatus().isSuccess()) {
                     Log.d(TAG, "sendDataItem - new data item set: " + result.getDataItem().getUri());
                 } else {
-                    Log.d(TAG, "sendDataItem - unsuccessful yoy");
+                    Log.d(TAG, "sendDataItem - unsuccessful");
                 }
             }
         });

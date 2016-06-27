@@ -52,6 +52,7 @@ import com.google.android.gms.wearable.Wearable;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 // /Users/business/Documents//android-sdk-macosx/platform-tools/adb -d forward tcp:5601 tcp:5601
@@ -383,7 +384,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             invalidate();
         }
 
-        private SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy");
+        private SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault());
         private float verticalCenterPos;
 
         private boolean fstTimeDone;
@@ -431,6 +432,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 Log.v(TAG, "onDraw - before calc line width");
             }
 
+            // FIXME: 27/06/2016 draw line below in not ambient
             // Draw weather art and low / high temperatures
             yOffset = yOffset + distBetweenLines;
             float spacePix = 25;
