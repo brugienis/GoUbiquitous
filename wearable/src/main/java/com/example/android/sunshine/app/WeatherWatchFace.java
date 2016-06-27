@@ -65,6 +65,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
     private static final Typeface NORMAL_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
+    private static final Typeface BOLD_TYPEFACE =
+            Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
 
     /**
      * Update rate in milliseconds for interactive mode. We update once a second since seconds are
@@ -130,8 +132,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         float mXOffset;
         float mYOffset;
-        private String mLowTemp = "25";
-        private String mHighTemp = "10";
+        private String mLowTemp = "10";
+        private String mHighTemp = "25";
         private int mWeatherId;
         // FIXME: 27/06/2016 next 3 values should be retrieved from resources in OnApplyWid...
 //        private int mTextSize = 22;
@@ -186,6 +188,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             mTimePaint = new Paint();
             mTimePaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mTimePaint.setTypeface(BOLD_TYPEFACE);
 
             mDatePaint = new Paint();
             mDatePaint = createTextPaint(resources.getColor(R.color.digital_text));
@@ -195,6 +198,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             mHighTempPaint = new Paint();
             mHighTempPaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mHighTempPaint.setTypeface(BOLD_TYPEFACE);
 
             mLowTempPaint = new Paint();
             mLowTempPaint = createTextPaint(resources.getColor(R.color.digital_text));
@@ -411,9 +415,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         }
 
         private SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault());
-        private float verticalCenterPos;
-
         private boolean fstTimeDone;
+
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
             logFstTime("onDraw - start");
@@ -424,7 +427,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
             }
 
-            verticalCenterPos = bounds.centerX();
+            float verticalCenterPos = bounds.centerX();
 //            logFstTime("onDraw - verticalCenterPos/mTextSize should/is : " + verticalCenterPos + "/" + mTextSize + "/" + mTimePaint.getTextSize());
 
 
@@ -432,14 +435,19 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float yOffset = mYOffset;
             mTime.setToNow();
             String text = String.format("%d:%02d", mTime.hour, mTime.minute);
-            float xOffset = getXOffset(text, mTimePaint);
+            float xOffset = getXOffset(text, mTimePaint, verticalCenterPos);
             canvas.drawText(text, xOffset, yOffset, mTimePaint);
 
             // Draw today's date
             yOffset = yOffset + distBetweenLines;
             Date today = new Date();
             String formattedDate = formatter.format(today);
-            canvas.drawText(formattedDate, getXOffset(formattedDate, mDatePaint), yOffset, mDatePaint);
+            canvas.drawText(formattedDate, getXOffset(formattedDate, mDatePaint, verticalCenterPos), yOffset, mDatePaint);
+
+            // Draw line separator
+            yOffset = yOffset + distBetweenLines / 2;
+            float lineSepHalfLgth = bounds.width() / 10;
+            canvas.drawLine(verticalCenterPos - lineSepHalfLgth, yOffset, verticalCenterPos + lineSepHalfLgth, yOffset, mTimePaint);
 
             // FIXME: 27/06/2016 draw line below in not ambient
             // Draw weather art and low / high temperatures
@@ -504,7 +512,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
         }
 
-        private float getXOffset(String text, Paint paint) {
+        private float getXOffset(String text, Paint paint, float verticalCenterPos) {
             float xOffset = verticalCenterPos - (paint.measureText(text) / 2F);
 //            Log.v(TAG, "getXOffset - xOffset : " + xOffset);
             return xOffset;
