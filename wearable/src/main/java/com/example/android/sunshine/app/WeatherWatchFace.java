@@ -425,12 +425,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float lowTempSize = mTextPaint.measureText(mLowTemp);
             float lineWidth;
             float imageXOffset;
+            float imageTopPosition;
             float highXOffset;
             if (mCurrWeatherArt == null) {
                 lineWidth = highTempSize
                         + spacePix
                         + lowTempSize;
                 imageXOffset = 0;
+                imageTopPosition = 0;
                 highXOffset = verticalCenterPos - lineWidth / 2;
             } else {
                 lineWidth = mWeatherArtWithAndHeight
@@ -439,6 +441,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                         + spacePix
                         + lowTempSize;
                 imageXOffset = verticalCenterPos - lineWidth / 2;
+                imageTopPosition = calculateImageTopPosition(yOffset, mTextPaint, mHighTemp);
                 highXOffset = imageXOffset + mWeatherArtWithAndHeight + spacePix;
             }
             float lowXOffset = highXOffset + highTempSize + spacePix;
@@ -450,7 +453,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             // FIXME: 24/06/2016 improve below - lineWidth is different
             if (mCurrWeatherArt != null) {
 ////                canvas.drawBitmap(mCurrWeatherArt, imageXOffset, yOffset + mWeatherArtWithAndHeight, mTextPaint);
-                canvas.drawBitmap(mCurrWeatherArt, imageXOffset, yOffset - mWeatherArtWithAndHeight, mTextPaint);
+                canvas.drawBitmap(mCurrWeatherArt, imageXOffset, imageTopPosition, mTextPaint);
             }
             // Draw high temp
             canvas.drawText(mHighTemp, highXOffset, yOffset, mTextPaint);
@@ -459,6 +462,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
 
             fstTimeDone = true;
+        }
+
+        private float calculateImageTopPosition(float yOffset, Paint textPaint, String highTemp) {
+            Rect rect = new Rect();
+            textPaint.getTextBounds(highTemp, 0, highTemp.length(), rect);
+            return yOffset - rect.height()/2 - mWeatherArtWithAndHeight / 2;
         }
 
         private void logFstTime(String msg) {
