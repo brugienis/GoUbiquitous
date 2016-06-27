@@ -112,7 +112,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         private GoogleApiClient mGoogleApiClient;
         boolean mRegisteredTimeZoneReceiver = false;
         Paint mBackgroundPaint;
-        Paint mTextPaint;
+        Paint mTimePaint;
+        Paint mDatePaint;
+        Paint mWeatherImagePaint;
+        Paint mHighTempPaint;
+        Paint mLowTempPaint;
         boolean mAmbient;
         Time mTime;
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -129,7 +133,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         private String mLowTemp = "25";
         private String mHighTemp = "10";
         private int mWeatherId;
-        private int mTextSize = 22;
+        // FIXME: 27/06/2016 next 3 values should be retrieved from resources in OnApplyWid...
+//        private int mTextSize = 22;
         private int topPosition = 96;
         private int distBetweenLines = 35;
         private Bitmap mCurrWeatherArt;
@@ -179,12 +184,24 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 //            mBackgroundPaint.setColor(resources.getColor(R.color.background));
             mBackgroundPaint.setColor(resources.getColor(R.color.background0));
 
-            mTextPaint = new Paint();
-            mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
-//            mTextPaint.setTextSize(mTextSize);
-//            Log.v(TAG, "onCreate - text size/mYOffset: " + mTextPaint.getTextSize() + "/" + mYOffset);
-//            I do not see the effect of the below
-//            mTextPaint.setTextSize(40);
+            mTimePaint = new Paint();
+            mTimePaint = createTextPaint(resources.getColor(R.color.digital_text));
+
+            mDatePaint = new Paint();
+            mDatePaint = createTextPaint(resources.getColor(R.color.digital_text));
+
+            mWeatherImagePaint = new Paint();
+            mWeatherImagePaint = createTextPaint(resources.getColor(R.color.digital_text));
+
+            mHighTempPaint = new Paint();
+            mHighTempPaint = createTextPaint(resources.getColor(R.color.digital_text));
+
+            mLowTempPaint = new Paint();
+            mLowTempPaint = createTextPaint(resources.getColor(R.color.digital_text));
+//            Paint mDatePaint;
+//            Paint mWeatherImagePaint;
+//            Paint mHighTempPaint;
+//            Paint mLowTempPaint;
 
             mTime = new Time();
         }
@@ -240,9 +257,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
 
 
-                        mTextPaint.setTextSize(mTextSize);
+//                        mTimePaint.setTextSize(mTextSize);
                         Log.v(TAG, "onDataChanged - mLowTemp/mHighTemp/mWeatherId: " + mLowTemp + "/" + mHighTemp + "/" + mWeatherId);
-                        Log.v(TAG, "onDataChanged - mTextSize/topPosition/distBetweenLines: " + mTextSize + "/" + topPosition + "/" + distBetweenLines);
+//                        Log.v(TAG, "onDataChanged - mTextSize/topPosition/distBetweenLines: " + mTextSize + "/" + topPosition + "/" + distBetweenLines);
                     }
                 } else if (event.getType() == DataEvent.TYPE_DELETED) {
                     // DataItem deleted
@@ -322,14 +339,18 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float textSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
             // FIXME: 23/06/2016 add the value below to resources and use code above
-            textSize = mTextSize;
+//            textSize = mTextSize;
 
             Log.v(TAG, "onApplyWindowInsets - mXOffset: " + mXOffset);
             mXOffset = 22.5F;
 //            mYOffset = 97.5F;
             mYOffset = topPosition;
             Log.v(TAG, "onApplyWindowInsets - mXOffset/mYOffset: " + mXOffset + "/" + mYOffset);
-            mTextPaint.setTextSize(textSize);
+            mTimePaint.setTextSize(35);
+            mDatePaint.setTextSize(22);
+            mWeatherImagePaint.setTextSize(22);
+            mHighTempPaint.setTextSize(30);
+            mLowTempPaint.setTextSize(30);
         }
 
         @Override
@@ -350,7 +371,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             if (mAmbient != inAmbientMode) {
                 mAmbient = inAmbientMode;
                 if (mLowBitAmbient) {
-                    mTextPaint.setAntiAlias(!inAmbientMode);
+                    mTimePaint.setAntiAlias(!inAmbientMode);
+                    mDatePaint.setAntiAlias(!inAmbientMode);
+                    mWeatherImagePaint.setAntiAlias(!inAmbientMode);
+                    mHighTempPaint.setAntiAlias(!inAmbientMode);
+                    mLowTempPaint.setAntiAlias(!inAmbientMode);
                 }
                 invalidate();
             }
@@ -400,29 +425,32 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
 
             verticalCenterPos = bounds.centerX();
-            logFstTime("onDraw - verticalCenterPos/mTextSize should/is : " + verticalCenterPos + "/" + mTextSize + "/" + mTextPaint.getTextSize());
+//            logFstTime("onDraw - verticalCenterPos/mTextSize should/is : " + verticalCenterPos + "/" + mTextSize + "/" + mTimePaint.getTextSize());
 
 
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
             float yOffset = mYOffset;
             mTime.setToNow();
             String text = String.format("%d:%02d", mTime.hour, mTime.minute);
-            float xOffset = getXOffset(text);
-            canvas.drawText(text, xOffset, yOffset, mTextPaint);
+            float xOffset = getXOffset(text, mTimePaint);
+            canvas.drawText(text, xOffset, yOffset, mTimePaint);
 
             // Draw today's date
             yOffset = yOffset + distBetweenLines;
             Date today = new Date();
             String formattedDate = formatter.format(today);
-            canvas.drawText(formattedDate, getXOffset(formattedDate), yOffset, mTextPaint);
+            canvas.drawText(formattedDate, getXOffset(formattedDate, mDatePaint), yOffset, mDatePaint);
 
             // FIXME: 27/06/2016 draw line below in not ambient
             // Draw weather art and low / high temperatures
+//            Paint mWeatherImagePaint;
+//            Paint mHighTempPaint;
+//            Paint mLowTempPaint;
             yOffset = yOffset + distBetweenLines;
 //            float weatherArtWithAndHeight = mCurrWeatherArt == null ? 0 : mWeatherArtWithAndHeight;
             float spacePix = 25;
-            float highTempSize = mTextPaint.measureText(mHighTemp);
-            float lowTempSize = mTextPaint.measureText(mLowTemp);
+            float highTempSize = mHighTempPaint.measureText(mHighTemp);
+            float lowTempSize = mLowTempPaint.measureText(mLowTemp);
             float lineWidth;
             float imageXOffset;
             float imageTopPosition;
@@ -441,7 +469,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                         + spacePix
                         + lowTempSize;
                 imageXOffset = verticalCenterPos - lineWidth / 2;
-                imageTopPosition = calculateImageTopPosition(yOffset, mTextPaint, mHighTemp);
+                imageTopPosition = calculateImageTopPosition(yOffset, mHighTempPaint, mHighTemp);
                 highXOffset = imageXOffset + mWeatherArtWithAndHeight + spacePix;
             }
             float lowXOffset = highXOffset + highTempSize + spacePix;
@@ -452,13 +480,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 logFstTime("onDraw - before printing bitmap - xOffset/yOffset/mCurrWeatherArt: " + xOffset + "/" + yOffset + "/" + mCurrWeatherArt);
             // FIXME: 24/06/2016 improve below - lineWidth is different
             if (mCurrWeatherArt != null) {
-////                canvas.drawBitmap(mCurrWeatherArt, imageXOffset, yOffset + mWeatherArtWithAndHeight, mTextPaint);
-                canvas.drawBitmap(mCurrWeatherArt, imageXOffset, imageTopPosition, mTextPaint);
+////                canvas.drawBitmap(mCurrWeatherArt, imageXOffset, yOffset + mWeatherArtWithAndHeight, mTimePaint);
+                canvas.drawBitmap(mCurrWeatherArt, imageXOffset, imageTopPosition, mWeatherImagePaint);
             }
             // Draw high temp
-            canvas.drawText(mHighTemp, highXOffset, yOffset, mTextPaint);
+            canvas.drawText(mHighTemp, highXOffset, yOffset, mHighTempPaint);
             // Draw low temp
-            canvas.drawText(mLowTemp, lowXOffset, yOffset, mTextPaint);
+            canvas.drawText(mLowTemp, lowXOffset, yOffset, mLowTempPaint);
 
 
             fstTimeDone = true;
@@ -476,8 +504,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
         }
 
-        private float getXOffset(String  text) {
-            float xOffset = verticalCenterPos - (mTextPaint.measureText(text) / 2F);
+        private float getXOffset(String text, Paint paint) {
+            float xOffset = verticalCenterPos - (paint.measureText(text) / 2F);
 //            Log.v(TAG, "getXOffset - xOffset : " + xOffset);
             return xOffset;
         }
