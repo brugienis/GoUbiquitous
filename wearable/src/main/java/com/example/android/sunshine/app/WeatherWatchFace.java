@@ -137,11 +137,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         private int mWeatherId;
         // FIXME: 27/06/2016 next 3 values should be retrieved from resources in OnApplyWid...
 //        private int mTextSize = 22;
-        private int topPosition = 96;
+//        private int topPosition = 96;
         private int distBetweenLines = 35;
         private Bitmap mCurrWeatherArt;
-        // FIXME: 24/06/2016 - set the proper value in onDataChanged
-        private int mWeatherArtWithAndHeight = 30;
+        // FIXME: 24/06/2016 - set the value from resources in onApplyWi...
+        private int mWeatherArtWithAndHeight = 30;  // 20dp
 
         // FIXME: 24/06/2016 remove before publishing
 //        private static final String ADDED_TO_COMPILE = "com.example.android.sunshine.app.key.PIC.IDX.XXX";
@@ -212,6 +212,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onConnected(Bundle bundle) {
+            Log.v(TAG, "onConnected - start");
             Wearable.DataApi.addListener(mGoogleApiClient, this);
         }
 
@@ -331,6 +332,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             WeatherWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
         }
 
+        private void delAnyTime() {
+
+        }
+
         @Override
         public void onApplyWindowInsets(WindowInsets insets) {
             super.onApplyWindowInsets(insets);
@@ -348,13 +353,18 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             Log.v(TAG, "onApplyWindowInsets - mXOffset: " + mXOffset);
             mXOffset = 22.5F;
 //            mYOffset = 97.5F;
-            mYOffset = topPosition;
+            mYOffset = 96;  // 64dp
             Log.v(TAG, "onApplyWindowInsets - mXOffset/mYOffset: " + mXOffset + "/" + mYOffset);
-            mTimePaint.setTextSize(35);
-            mDatePaint.setTextSize(22);
-            mWeatherImagePaint.setTextSize(22);
-            mHighTempPaint.setTextSize(30);
-            mLowTempPaint.setTextSize(30);
+            mTimePaint.setTextSize(35); // 23dp
+//            Log.v(TAG, "onApplyWindowInsets - dp: " + Utility.pixelsToDp(getBaseContext(), 35));
+            mDatePaint.setTextSize(22); // 15dp
+            mWeatherImagePaint.setTextSize(22);  // 15dp
+            mHighTempPaint.setTextSize(30); // 20dp
+            mLowTempPaint.setTextSize(30);  // 20dp
+            Log.v(TAG, "onApplyWindowInsets - end new");
+
+//            DisplayMetrics displayMetrics = getBaseContext().getResources().getDisplayMetrics();
+//            Log.v(TAG, "pixelsToDp - pixels/density): " + 35 + "/" + displayMetrics.density);
         }
 
         @Override

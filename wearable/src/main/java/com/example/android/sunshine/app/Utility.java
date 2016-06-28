@@ -14,6 +14,9 @@ public class Utility {
      * @param weatherId from OpenWeatherMap API response
      * @return resource id for the corresponding icon. -1 if no relation is found.
      */
+
+    private static final String TAG = Utility.class.getSimpleName() + "BR";
+
     public static int getArtResourceForWeatherCondition(int weatherId) {
         // Based on weather code data found at:
         // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
@@ -50,6 +53,6 @@ public class Utility {
 
     public static int pixelsToDp (Context context, int pixels) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        return (int) ((pixels/displayMetrics.density)+0.5);
+        return (int) ((pixels/displayMetrics.density) + 0.5);
     }
 }
