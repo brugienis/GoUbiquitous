@@ -130,7 +130,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         };
         int mTapCount;
 
-        float mXOffset;
+//        float mXOffset;
         float mYOffset;
         private String mLowTemp = "10";
         private String mHighTemp = "25";
@@ -332,8 +332,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             WeatherWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
         }
 
-        private void delAnyTime() {
-
+        private void delAnyTimeTime() {
+            int i = 0;
         }
 
         @Override
@@ -343,25 +343,28 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             // Load resources that have alternate values for round watches.
             Resources resources = WeatherWatchFace.this.getResources();
             boolean isRound = insets.isRound();
-            mXOffset = resources.getDimension(isRound
-                    ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
-            float textSize = resources.getDimension(isRound
-                    ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
-            // FIXME: 23/06/2016 add the value below to resources and use code above
-//            textSize = mTextSize;
+//            mXOffset = resources.getDimension(isRound
+//                    ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
+            float textTimeSize = resources.getDimension(isRound
+                    ? R.dimen.digital_text_time_size_round : R.dimen.digital_text_time_size);
+            float firstLineYPosition = resources.getDimension(R.dimen.digital_first_line_y_position);
+            float textDateSize = resources.getDimension(R.dimen.digital_text_date_size);
+            float textHighTempSize = resources.getDimension(R.dimen.digital_text_high_temp_size);
+            float textLowTempSize = resources.getDimension(R.dimen.digital_text_low_temp_size);
 
-            Log.v(TAG, "onApplyWindowInsets - mXOffset: " + mXOffset);
-            mXOffset = 22.5F;
-//            mYOffset = 97.5F;
-            mYOffset = 96;  // 64dp
-            Log.v(TAG, "onApplyWindowInsets - mXOffset/mYOffset: " + mXOffset + "/" + mYOffset);
-            mTimePaint.setTextSize(35); // 23dp
-//            Log.v(TAG, "onApplyWindowInsets - dp: " + Utility.pixelsToDp(getBaseContext(), 35));
-            mDatePaint.setTextSize(22); // 15dp
+//            mYOffset = 96;  // 64dp
+            mYOffset = firstLineYPosition;  // 64dp
+//            mTimePaint.setTextSize(35); // 23dp
+            mTimePaint.setTextSize(textTimeSize); // 23dp
+            mDatePaint.setTextSize(textDateSize); // 15dp
+//            mDatePaint.setTextSize(20); // 15dp
+            Log.v(TAG, "onApplyWindowInsets - mDatePaint text size: " + mDatePaint.getTextSize());
             mWeatherImagePaint.setTextSize(22);  // 15dp
-            mHighTempPaint.setTextSize(30); // 20dp
-            mLowTempPaint.setTextSize(30);  // 20dp
-            Log.v(TAG, "onApplyWindowInsets - end new");
+//            mHighTempPaint.setTextSize(30); // 20dp
+            mHighTempPaint.setTextSize(textHighTempSize); // 20dp
+//            mLowTempPaint.setTextSize(30);  // 20dp
+            mLowTempPaint.setTextSize(textLowTempSize);  // 20dp
+            Log.v(TAG, "onApplyWindowInsets - end with dp");
 
 //            DisplayMetrics displayMetrics = getBaseContext().getResources().getDisplayMetrics();
 //            Log.v(TAG, "pixelsToDp - pixels/density): " + 35 + "/" + displayMetrics.density);
